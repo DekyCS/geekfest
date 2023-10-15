@@ -40,9 +40,9 @@
                             <div class="form-button">
                                 <button id="submit" type="submit" class="ibtn">login</button>
                             </div>
-
-                            <div class="popup" id="popup">
-                                <h3>Would you like to autofill with FaceIt</h3>
+                            
+                            <div class="popup"  id="popup">
+                                <h3 style="color: black;">Would you like to autofill with FaceIt</h3>
                                 <button type="button" onclick="yes()">Yes</button>
                                 <button type="button" onclick="no()">No</button>
                             </div>
@@ -52,8 +52,8 @@
                             <span>Or login with</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>
                         </div>
                         <div class="popup" id="popup2">
-                            <h3>Checking Face</h3>
-                            <img src="/static/images/loading.gif" width="50%"/>
+                            <h3 style="color: black;">Checking Face</h3>
+                            <img id="loading" src="/static/images/loading.gif" width="50%"/>
                         </div>
                     </div>
                 </div>
@@ -92,9 +92,21 @@ function yes() {
                     alert("Invalid face id")
                     popup2.classList.remove("open-popup");
                 } else {
-                    popup2.classList.remove("open-popup");
-                    username.value = data.username;
-                    password.value = data.value;
+                    var checkmark = document.createElement('img');
+                    var loading = document.getElementById("loading");
+
+                    checkmark.src = "/static/images/checkmark.png"
+                    checkmark.style.width = '50%'
+
+                    popup2.removeChild(loading);
+                    popup2.appendChild(checkmark);
+
+                    setTimeout(function () {
+                        popup2.classList.remove("open-popup");
+                        username.value = data.username;
+                        password.value = data.value;
+                    }, 800);
+
                 }
             })
 }

@@ -39,10 +39,10 @@
                             </div>
                         </form>
 
-                        <div class="popup" id="popup">
-                            <h3>Please get ready to set up your Face ID</h3>
+                        <div class="popup_register" id="popup">
+                            <h3 style="color: black;">Please get ready to set up your Face ID</h3>
                             <div> 
-                                <img src="{{ url_for('video_feed') }}" width="50%"/>
+                                <img src="{{ url_for('video_feed') }}" width="60%"/>
                             </div>
                             <button type="button" onclick="closePopup()">Scan Face ID</button>
                         </div>
@@ -62,14 +62,14 @@
 
         function openPopup(){
             if (username.value != ""){
-                popup.classList.add("open-popup");
+                popup.classList.add("open-popup_register");
             } else {
             alert("Please enter a username");        }
         }
 
         function closePopup(){
 
-            popup.classList.remove("open-popup");
+            popup.classList.remove("open-popup_register");
 
             theButton = document.getElementById("submit");
 
@@ -77,7 +77,7 @@
 
             setTimeout(function () {
                 theButton.innerHTML = "Success!";
-            }, 2000);
+            }, 1000);
 
             fetch("/take_picture", {
                 method: "POST"
@@ -92,9 +92,7 @@
                             }
                         }).then(() => {
                     // Request was successful, redirect to a new page after 2 seconds
-                    setTimeout(function () {
-                        window.location.href = "/bellxlogin";
-                    }, 2000);
+                    window.location.href = "/bellxlogin";
                     })
         }, 2000);
         })

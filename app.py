@@ -240,6 +240,8 @@ def scan_face():
             else:
                 return jsonify({"message": "username_used"})
         elif check2:
+
+            print("i am here")
             userid = session["userid"]
 
             print("Session:" + str(userid))
@@ -266,6 +268,7 @@ def scan_face():
             if searchUsername:
 
                 userid = searchUsername[0]["userid"]
+                print(str(userid))
 
 
                 for i in range(3):
@@ -274,9 +277,9 @@ def scan_face():
 
                     confidence = result[1][:2]
 
-                    
 
                     if (result[0][:-4] == str(userid) and int(confidence) > 90):
+                        session["userid"] = userid
                         return jsonify({"message": "succesful"})
                         
                     else:
@@ -285,13 +288,6 @@ def scan_face():
                 return jsonify({"message": "no_username"})
 
     return redirect('/login')
-
-@app.route("/scan_face2", methods=["GET", "POST"])
-def scan_face2():
-    if request.method == "POST":
-
-
-        return redirect('/login')
 
 
 #FaceID Code
@@ -336,7 +332,7 @@ class FaceRecognition:
 
         start_time = time.time()
 
-        while ((time.time() - start_time) < 3):
+        while ((time.time() - start_time) < 1):
             ret, frame = video_capture.read()
 
             if self.process_current_frame:

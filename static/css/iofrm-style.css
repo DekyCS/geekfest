@@ -1952,38 +1952,64 @@ input.sm-content {
 }
 
 
-.popup{
-    width: 700px;
-    background: #ADD8E6;
+.popup{ 
+    width: 400px;
+    background: #fff;   
     border-radius: 6px;
     position: absolute;
     top: 0;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.1);
     text-align: center;
-    padding: 0 30px 30px;
-    color: #333;
-    border-radius: 4px;
+    padding: 30px 30px 30px;
+    border-radius: 25px;
     visibility: hidden;
     transition: transform 0.4s, top 0.4s;
+  
+} 
+
+.popup_register{ 
+    width: 600px;
+    background: #fff;   
+    border-radius: 6px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.1);
+    text-align: center;
+    padding: 30px 30px 30px;
+    border-radius: 25px;
+    visibility: hidden;
+    transition: transform 0.4s, top 0.4s;
+  
+} 
+
+.popup h3{
+    color: black;
 }
 
 .open-popup{
+    visibility: visible;
+    top: 150px;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.open-popup_register{
     visibility: visible;
     top: 50%;
     transform: translate(-50%, -50%) scale(1);
 }
 
-.popup button{
-    width: 100%;
-    margin-top: 50px;
-    padding: 10px 0;
-    background: #6fd649;
-    color: #fff;
-    border: 0;
-    outline: none;
-    font-size: 18px;
-    border-radius: 4px;
-    cursor: pointer;
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+.popup button, .popup_register button{
+        background: lightblue;
+        margin-top: 20px;
+        font-size: 20px;
+        border: none;
+        color: black;
+        padding: 10px 20px;
 }
+
+.popup button:hover {
+    background: rgb(0,3,255);
+ background: linear-gradient(0deg, rgba(0,3,255,1) 0%, rgba(2,126,251,1) 100%);
+ }
