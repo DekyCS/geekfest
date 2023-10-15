@@ -35,20 +35,74 @@
                             <a href="/login" class="active">Login</a><a href="/register">Register</a>
                         </div>
                         <form method="post" action="/login">
-                            <input class="form-control" type="text" name="username" placeholder="E-mail Address" required>
-                            <input class="form-control" type="password" name="password" placeholder="Password" required>
+                            <input class="form-control" type="text" name="username" autocomplete="off" placeholder="Username" id="username" required>
+                            <input class="form-control" type="password" name="password" placeholder="Password" id="password" required>
                             <div class="form-button">
                                 <button id="submit" type="submit" class="ibtn">login</button>
                             </div>
+
+                            <div class="popup" id="popup">
+                                <h3>Would you like to autofill with FaceIt</h3>
+                                <button type="button" onclick="yes()">Yes</button>
+                                <button type="button" onclick="no()">No</button>
+                            </div>
+
                         </form>
                         <div class="other-links">
                             <span>Or login with</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>
+                        </div>
+                        <div class="popup" id="popup2">
+                            <h3>Checking Face</h3>
+                            <img src="/static/images/loading.gif" width="50%"/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+<script>
+let popup = document.getElementById("popup");
+let popup2 = document.getElementById("popup2");
+const username = document.getElementById('username');
+const password = document.getElementById('password');
+
+username.onfocus = function () {
+    popup.classList.add("open-popup");
+};
+password.onfocus = function () {
+    popup.classList.add("open-popup");
+};
+
+function yes() {
+    popup.classList.remove("open-popup");
+    popup2.classList.add("open-popup");
+
+    fetch("/scan_face", {
+            method: "POST",
+            body: new URLSearchParams({"check2": "yes"}), // Send username as part of the POST request body
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded" // Set the appropriate content type
+            }
+        }).then(response => response.json())
+            .then(data => {
+                var message = data.message
+
+                if (message == "no_faceid") {
+                    alert("Invalid face id")
+                    popup2.classList.remove("open-popup");
+                } else {
+                    popup2.classList.remove("open-popup");
+                    username.value = data.username;
+                    password.value = data.value;
+                }
+            })
+}
+function no() {
+    popup.classList.remove("open-popup");
+}
+
+</script>
 <script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/popper.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>

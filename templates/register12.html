@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bellx Register</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/fontawesome-all.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/iofrm-style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/iofrm-theme12.css">
+</head>
+<body>
+    
+
+    <div class="form-body">
+        <div class="row">
+            <div class="form-holder">
+                <div class="form-content">  
+                    <div class="form-items">
+                        <div class="website-logo-inside">
+                            <a href="/bellxregister">
+                                <div class="logo">
+                                    <h1>FaceIt</h1>
+                                </div>
+                            </a>
+                        </div>
+                        <h3>Passwords Are a Thing of the Past!</h3>
+                        <p>No Passwords, No Problems!</p>
+                        <div class="page-links">
+                            <a href="/bellxlogin" >Login</a><a href="/bellxregister" class="active">Register</a>
+                        </div>
+                        <form action="/bellxregister" method="post">
+                            <input id="input_element" class="form-control" type="text" name="username" autocomplete="off" placeholder="Username" required>
+                            <div class="form-button">
+                            <button type="button" class="ibtn" onclick="openPopup()">Set up Face ID</button>
+                            </div>
+                            <div class="form-button" style="color: aqua;">
+                                <button id="submit" type="submit" class="ibtn">Register</button>
+                            </div>
+                        </form>
+
+                        <div class="popup" id="popup">
+                            <h3>Please get ready to set up your Face ID</h3>
+                            <div> 
+                                <img src="{{ url_for('video_feed') }}" width="50%"/>
+                            </div>
+                            <button type="button" onclick="closePopup()">Scan Face ID</button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    username = document.getElementById("input_element");
+    
+        //if (username.value != "")
+                        
+        let popup = document.getElementById("popup");
+
+        function openPopup(){
+            if (username.value != ""){
+                popup.classList.add("open-popup");
+            } else {
+            alert("Please enter a username");        }
+        }
+
+        function closePopup(){
+
+            popup.classList.remove("open-popup");
+
+            theButton = document.getElementById("submit");
+
+            theButton.innerHTML = "Loading..."
+
+            setTimeout(function () {
+                theButton.innerHTML = "Success!";
+            }, 2000);
+
+            fetch("/take_picture", {
+                method: "POST"
+            }).then(() => {
+        // Request was successful, redirect to a new page after 2 seconds
+        setTimeout(function () {
+                        fetch("/bellxregister", {
+                            method: "POST",
+                            body: new URLSearchParams({ "username": username.value }), // Send username as part of the POST request body
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded" // Set the appropriate content type
+                            }
+                        }).then(() => {
+                    // Request was successful, redirect to a new page after 2 seconds
+                    setTimeout(function () {
+                        window.location.href = "/bellxlogin";
+                    }, 2000);
+                    })
+        }, 2000);
+        })
+
+        }
+        
+    
+</script>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/popper.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/main.js"></script>
+</body>
+</html>

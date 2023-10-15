@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaceI Login</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/fontawesome-all.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/iofrm-style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/iofrm-theme12.css">
+</head>
+<body>
+    <div class="form-body">
+        <div class="row">
+            <div class="form-holder">
+                <div class="form-content">  
+                    <div class="form-items">
+                        <div class="website-logo-inside">
+                            <a href="/bellxlogin">
+                                <div class="logo">
+                                    <h1>FaceIt</h1>
+                                </div>
+                            </a>
+                        </div>
+                        <h3>Passwords Are a Thing of the Past!</h3>
+                        <p>No Passwords, No Problems!</p>
+                        <div class="page-links">
+                            <a href="/bellxlogin" class="active">Login</a><a href="/bellxregister">Register</a>
+                        </div>
+                        
+                            <input class="form-control" autocomplete="off" type="text" name="username" placeholder="Username" id="input_element" required>
+                            <!--
+                            <input class="form-control" type="password" name="password" placeholder="Password" required>
+                            -->
+
+                            <div class="form-button">
+                                <button id="submit" type="button" class="ibtn" onclick="openPopup()">Login with FaceIT</button>
+
+                            <div class="popup" id="popup">
+                                <h3>Checking Face</h3>
+                                <img src="/static/images/loading.gif" width="50%"/>
+                            </div>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let popup = document.getElementById("popup");
+    
+        function openPopup(){
+
+            var username = document.getElementById("input_element");
+
+            popup.classList.add("open-popup");
+
+            fetch("/scan_face", {
+            method: "POST",
+            body: new URLSearchParams({ "username": username.value }), // Send username as part of the POST request body
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded" // Set the appropriate content type
+            }
+        }).then(response => response.json())
+            .then(data => {
+                var message = data.message
+
+                if (message == "no_username") {
+                    alert("Incorrect Username")
+                    window.location.href = "/bellxlogin";
+                } else if (message == "no_faceid") {
+                    alert("Not a valid face")
+                    window.location.href = "/bellxlogin";
+                } else {
+                    window.location.href = "/done";
+
+                }
+            })
+        }
+    
+
+    </script>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/popper.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/main.js"></script>
+</body>
+</html>

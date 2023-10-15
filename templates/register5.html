@@ -34,22 +34,80 @@
                         <div class="page-links">
                             <a href="/login">Login</a><a href="/register" class="active">Register</a>
                         </div>
-                        <form action="/register" method="post">
-                            <input class="form-control" type="text" name="username" placeholder="Full Name" required>
-                            <input class="form-control" type="password" name="password" placeholder="Password" required>
-                            <input class="form-control" type="password" name="password2" placeholder="Password" required>
+                        
+                            <input class="form-control" type="text" autocomplete="off" name="username" placeholder="Username" id="username" required>
+                            <input class="form-control" type="password" name="password" placeholder="Password" id="password" required>
+                            <input class="form-control" type="password" name="password2" placeholder="Password" id="password_confirm" required>
                             <div class="form-button">
-                                <button id="submit" type="submit" class="ibtn">Register</button>
+                                <button id="submit" type="button" class="ibtn" onclick="openPopup()">Register</button>
                             </div>
-                        </form>
+
+                            <div class="popup" id="popup">
+                                <h3>Would you like to save your password on FaceIt</h3>
+                                <button type="button" onclick="yes()">Yes</button>
+                                <button type="button" onclick="no()">No</button>
+                            </div>
+                            
                         <div class="other-links">
                             <span>Or register with</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>
+                        </div>
+
+                        <div class="popup" id="popup2">
+                            <h3>Checking Face</h3>
+                            <img src="/static/images/loading.gif" width="50%"/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+<script>
+
+    let popup = document.getElementById("popup");
+    let popup2 = document.getElementById("popup2");
+
+    function openPopup(){
+            popup.classList.add("open-popup");
+        }
+    function no(){
+        window.location.href = "/login";
+    }
+    function yes(){
+        popup.classList.remove("open-popup");
+        popup2.classList.add("open-popup");
+
+        let username = document.getElementById("username");
+        let password = document.getElementById("password");
+        let password_confirm = document.getElementById("password_confirm");
+
+        fetch("/scan_face", {
+            method: "POST",
+            body: new URLSearchParams({ "username": username.value, "password": password.value, "password_confirm": password_confirm.value, "check": "yes"}), // Send username as part of the POST request body
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded" // Set the appropriate content type
+            }
+        }).then(response => response.json())
+            .then(data => {
+                var message = data.message
+
+                if (message == "no_username") {
+                    alert("Username already used")
+                    popup2.classList.remove("open-popup");
+                } else if (message == "no_faceid") {
+                    alert("Not a valid face")
+                    popup2.classList.remove("open-popup");
+                } else if (message == "username_used") {
+                    alert("Username is taken")
+                    popup2.classList.remove("open-popup");
+                } else {
+                    window.location.href = "/login";
+
+                }
+            })
+    }
+</script>
+
 <script src="js/jquery.min.js"></script>
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
