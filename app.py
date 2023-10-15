@@ -46,74 +46,17 @@ def login():
         else:
             print("made connections")
             correctPassword = db.execute("SELECT password FROM users where username = ?", username)
-            print(correctPassword[0]['password'])
             if check_password_hash(correctPassword[0]['password'], password) or correctPassword[0]['password']:
-                print("connected with the hash")
                 return redirect("/done")
             else:
                 print("failed to connect")
                 return redirect("/login")
         
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     
     if request.method == "GET":
         return render_template("register5.html")
-        
-
-    else:
-        print("made a request to the /register page")
-        username = request.form.get("username")
-        password = request.form.get("password")
-        password_confirm = request.form.get("password2")
-
-        
-
-        users = db.execute("SELECT * FROM users WHERE username = %s", (username,))
-
-        if not users: # no users with the same username
-            if password != password_confirm:
-                return redirect("/register")
-            else:
-                print(generate_password_hash(password))
-                db.execute("INSERT INTO users (username, password) VALUES (?, ?)", username, generate_password_hash(password))
-                print("we have made a new user")
-                return redirect("/login")
-        else:
-            return redirect("/register") # their existe alr a user with that username
-
-@app.route("/bellxlogin", methods=["GET", "POST"])
-def bellxlogin():
-
-    if request.method == "GET":
-
-        return render_template("login12.html")
-        
-    else:
-        username = request.form.get("username")
-        #password = request.form.get("password")
-        userid = db.execute("SELECT userid FROM usersbellx WHERE username = %s", username)
-        
-        
-        if not userid:
-            print("dont existe a userid")
-            return redirect('/login')
-            
-            
-        else:
-            print("made conntection")
-            correctPassword = db.execute("SELECT password FROM usersbellx WHERE username = ?", username)
-            if check_password_hash(correctPassword[0]['password'], password):
-                print("connected")
-                session["userid"] = userid[0]['userid']
-                print(session["userid"])
-                return redirect("/done")
-            else:
-                return redirect("/login")
-        
-
 
 @app.route("/bellxregister", methods=["GET", "POST"])
 def bellxregister():
@@ -125,10 +68,6 @@ def bellxregister():
     else:
         
         username = request.form.get("username")
-
-        #password = request.form.get("password")
-        #password_confirm = request.form.get("password2")
-
         
         db.execute("INSERT INTO usersbellx (username) VALUES (?)", username) 
         users = db.execute("SELECT * FROM usersbellx WHERE username = %s", (username))
@@ -138,21 +77,6 @@ def bellxregister():
         newfilename = "./static/faces/" + str(session["userid"]) + ".jpg"
         os.rename("./static/faces/tobechanged.jpg", newfilename)
 
-        """"
-        if not users: # no users with the same username
-            if password != password_confirm:
-                return redirect("/register")
-            else:
-                db.execute("INSERT INTO usersbellx (username, password) VALUES (?, ?)", username, generate_password_hash(password))
-                userid = db.execute("SELECT userid FROM usersbellx WHERE username = %s", username)
-                session["userid"] = userid[0]['userid']
-
-                print("we have made a new user")
-                print(session["userid"])
-                return redirect("/login")
-        else:
-            return redirect("/register") # their existe alr a user with that username
-        """
         return redirect("/done")
         
 def gen(camera):
@@ -182,17 +106,12 @@ def take_picture():
 
         cam = cv2.VideoCapture(0)
 
-        #cv2.namedWindow("test")
-
-
         ret, frame = cam.read()
         if not ret:
             print("failed to grab frame")
-        #cv2.imshow("test", frame)
 
         img_name = f"./static/faces/tobechanged.jpg"
         cv2.imwrite(img_name, frame)
-        #print("{} written!".format(img_name))
 
         cam.release()
 
@@ -200,6 +119,13 @@ def take_picture():
 
         return redirect('/bellxlogin')
     
+@app.route("/bellxlogin", methods=["GET", "POST"])
+def bellxlogin():
+
+    if request.method == "GET":
+
+        return render_template("login12.html")
+
 @app.route("/scan_face", methods=["GET", "POST"])
 def scan_face():
     if request.method == "POST":
@@ -241,10 +167,8 @@ def scan_face():
                 return jsonify({"message": "username_used"})
         elif check2:
 
-            print("i am here")
             userid = session["userid"]
 
-            print("Session:" + str(userid))
             for i in range(3):
                 fr = FaceRecognition()
                 result = fr.run_recognition()
@@ -254,7 +178,6 @@ def scan_face():
 
                 if (result[0][:-4] == str(userid) and int(confidence) > 90):
                     searchlogin = db.execute("SELECT * FROM passwords WHERE userid = ?", userid)
-                    print(searchlogin[0])
                     return jsonify({"username": searchlogin[0]["username"], "password": searchlogin[0]["password"]})
                     
                 else:
@@ -268,8 +191,6 @@ def scan_face():
             if searchUsername:
 
                 userid = searchUsername[0]["userid"]
-                print(str(userid))
-
 
                 for i in range(3):
                     fr = FaceRecognition()
@@ -315,14 +236,12 @@ class FaceRecognition:
     #encode faces
 
     def encode_faces(self):
-        print(os.listdir('./static/faces'))
 
         for image in os.listdir('./static/faces'):
             face_image = face_recognition.load_image_file(f'./static/faces/{image}')
             face_encoding = face_recognition.face_encodings(face_image)[0]
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
-        #print(self.known_face_names)
 
     def run_recognition(self):
         video_capture = cv2.VideoCapture(0)
@@ -358,39 +277,12 @@ class FaceRecognition:
 
                     self.face_names.append(f'{name} ({confidence})')
 
-                    #print(confidence)
                     if name and confidence:
                         return name, confidence
 
             self.process_current_frame = not self.process_current_frame
 
-            
-            # Display annotations
-
-            """
-            for (top, right, bottom, left), name in zip(self.face_locations, self.face_names):
-                top *= 4
-                right *= 4
-                bottom *= 4
-                left *= 4
-
-                cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-                cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), -1)
-                cv2.putText(frame, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
-            """
-            #cv2.imshow('Face Recognition', frame)
-
-            #name = self.known_face_names[best_match_index]
-
-            #print(name)
-            #print(confidence)
-
             time.sleep(1)
-
-        
-
-
-
         
         video_capture.release()
         cv2.destroyAllWindows()
